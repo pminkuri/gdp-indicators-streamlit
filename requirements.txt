@@ -1,4 +1,7 @@
 pandas
 streamlit
 altair
-vega_datasets
+matplotlib
+xlrd
+openpyxl
+
