@@ -3,9 +3,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import altair as alt
 import plotly.express as px
-
+import plotly.graph_objects as go
 import numpy as np
-import pandas as pd
+
+
+
+
+
+
+
+
 df = pd.read_excel('indicators.xlsx')
 df=df.round(3)
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
@@ -43,7 +50,7 @@ seriesName=['GDP per capita (current US$)',
 
     
 
-navigate_button = st.sidebar.radio("Select The Page to View", ('Display DataFrames','Compare Countries', 'Statistical Analysis')) 
+navigate_button = st.sidebar.radio("Select The Page to View", ('Display DataFrames','Compare Countries', 'Statistical Analysis','Sun Burst','Tree Chart','Bar Charts','Scatter Plots')) 
 
 if navigate_button=='Display DataFrames':
     st.header('Data Frame')
@@ -113,6 +120,101 @@ elif navigate_button=='Statistical Analysis':
     countryName = st.selectbox('Choose country  to show stats?',
                                         countries)
     st.write( dfa.agg({countryName: ['min', 'max', 'mean', 'median']}) )
+
+
+elif navigate_button=='Sun Burst':
+    st.header("Sun Burst")
+    df = pd.read_excel('indicators.xlsx')
+    df=df.round(3)
+    pd.set_option('display.float_format', lambda x: '%.3f' % x)
+    edf = pd.melt(df,id_vars=['SeriesName','CountryName'], value_vars=[2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2018])
+    countries = edf['CountryName'].unique()
+    series = edf['SeriesName'].unique()
+    year = edf['variable'].unique()
+    select_event = st.selectbox('Select series to show the dataframe?',series)
+    select_year = st.selectbox('Select year to show the dataframe?',year)
+    edf2 = pd.melt(df,id_vars=['SeriesName','CountryName'], value_vars=[2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2018])
+    edf2=edf2.loc[edf2.SeriesName == select_event]
+    edf2=edf2.loc[edf2.variable == select_year]
+    edf2.dropna()
+    edf2["value"]=pd.to_numeric(edf2["value"])
+    edf2["variable"]=pd.to_numeric(edf2["variable"])
+    fig=px.sunburst(edf2, path=['variable','CountryName','SeriesName'], values='value', width=1000,height=800,hover_name="CountryName", hover_data={'value':True})
+    st.plotly_chart(fig)
+
+elif navigate_button=='Tree Chart':
+
+    df = pd.read_excel('indicators.xlsx')
+    df=df.round(3)
+    pd.set_option('display.float_format', lambda x: '%.3f' % x)
+    edf = pd.melt(df,id_vars=['SeriesName','CountryName'], value_vars=[2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018])
+    countries = edf['CountryName'].unique()
+    series = edf['SeriesName'].unique()
+    year = edf['variable'].unique()
+
+    st.header('Tree Chart')
+
+    selectState = st.multiselect('Select Countries', countries)
+    series_data = st.multiselect("Attributes: ", series)
+    
+    selectyear = st.selectbox("Select a year",  year)
+    country_d = edf['CountryName'].isin(selectState) & edf['SeriesName'].isin(series_data) & edf.variable.isin([selectyear])
+    tree_df = edf[country_d]
+
+
+    if(len(series_data)>0):
+        tree_graph = px.treemap(tree_df, path = ['SeriesName','CountryName','value'],values='value', color='CountryName')
+        st.markdown("**Comparison for** " + str(selectyear))
+        st.plotly_chart(tree_graph)
+        
+    else:
+        st.write("Select Attributes and countries to display graph")
+
+elif navigate_button=='Bar Charts':
+    st.header('Bar Chart')
+    edf = pd.melt(df,id_vars=['SeriesName','CountryName'], value_vars=[2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018])
+    countries = edf['CountryName'].unique()
+    series = edf['SeriesName'].unique()
+    year = edf['variable'].unique()
+    selBarCountry = st.multiselect('Select Countries: ', countries)
+    selBarSeries = st.selectbox('Select Attributes: ', series)
+    barComp = edf['CountryName'].isin(selBarCountry) & edf['SeriesName'].isin([selBarSeries])
+    bar_df = edf[barComp]
+    lineChart=alt.Chart(bar_df).mark_bar(opacity=0.7, width = 25.5).encode(
+    x='variable',
+        y=alt.Y('value', stack = None),
+        color='CountryName',
+    ).properties(
+        width=800,
+        height=300)
+    if(len(selBarCountry)>0):
+
+        st.markdown('      _ compare countries and attributes from 2005 to 2018_')
+        st.write(lineChart)
+
+    
+    st.write("Dataset for barchart")
+    st.write(bar_df)
+
+elif navigate_button=='Scatter Plots':
+    st.header('Scatter Plot')
+    import plotly.express as px
+    edf = pd.melt(df,id_vars=['SeriesName','CountryName'], value_vars=[2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018])
+    countries = edf['CountryName'].unique()
+    series = edf['SeriesName'].unique()
+    year = edf['variable'].unique()
+
+    scatterCountry = st.multiselect(' Select Countries: ', countries)
+    scatterAttribute = st.selectbox('What do you want to see? ', series)
+
+    if(len(scatterCountry)>0):
+        scatterData = edf['CountryName'].isin(scatterCountry) & edf['SeriesName'].isin([scatterAttribute]) 
+        scatterChart = edf[scatterData]
+
+        fig = px.scatter(scatterChart, x="variable", y="value", color="CountryName",
+                        hover_data=['value'])
+        st.write(fig)
+    
 
 
 
