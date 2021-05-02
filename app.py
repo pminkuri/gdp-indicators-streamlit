@@ -58,13 +58,13 @@ seriesName=['GDP per capita (current US$)',
 
     
 
-navigate_button = st.sidebar.radio("Select The Page to View", ('GDP World view','Compare Countries', 'Statistical Analysis','Comparisons')) 
+navigate_button = st.sidebar.radio("Select The Page to View", ('GDP World view','Compare Countries', 'Sun Burst','Statistical Analysis','Comparisons')) 
 
 if navigate_button=='GDP World view':
 
    
     
-    compare_GDP = st.radio("Select type to compare", ('GDP per capita (current US$)','GDP growth (annual %)')) 
+    compare_GDP = st.radio("Select type to compare", ('GDP growth (annual %)','GDP per capita (current US$)')) 
     selected_series='GDP growth (annual %)'
     if compare_GDP=='GDP growth (annual %)':
         selected_series='GDP growth (annual %)'
