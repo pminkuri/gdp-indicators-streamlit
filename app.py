@@ -9,9 +9,15 @@ import numpy as np
 
 df = pd.read_excel('indicators.xlsx')
 df=df.round(3)
+
+content_string="<p><b>Attributes</b></p><br><p><b>GDP growth (annual %):</b> Annual percentage growth rate of GDP based on local currency </p><p><b>GDP per capita (current US$):</b> Gross domestic product by midyear population. </p><p><b>Imports of goods & services (% GDP):</b> Value of all merchandise received from the world</p><p><b>Manufacturing, value added(% GDP):</b> Value of output minus input for ITIS division 15-37</p><p><b>Trade(% of GDP):</b> Sum of exports and imports of goods and services </p><p><b>Forest area(% of land area):</b> total land area divided by forest area</p><p><b>Forest area(sp.km):</b> it is land under natural or planted stands of trees height of at least 5 meters and a canopy height of 10 percent.</p> <p><b>Life Expectancy At Birth, Total (Years):</b>Expected number of years that a newborn child will live if the mortality rates are the same as the time the child was born.</p><p><b>Population growth (annual %):</b> the exponential rate of growth of midyear population from year t-1 to t, expressed as a percentage.</p><p><b>CO2 emissions (kg per 2010 US$ of GDP):</b>Carbon dioxide emissions are those stemming from the burning of fossil fuels and the manufacture of cement.</p><p><b>Agriculture, forestry, and fishing, value added (% of GDP):</b>value added to the net output of the ISIC( International standard industrial classification ) divisions 1-5 and includes forestry, hunting, and fishing, as well as cultivation of crops and livestock production.</p>"
+
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
-html_string = "<h1>World Development Indicators</h1>"
+html_string = "<br><br>"
+st.title(':earth_americas:   World Development Indicators')
 st.markdown(html_string, unsafe_allow_html=True)
+
+
 countries=['Germany',
     'France',
     'United States',
@@ -136,6 +142,11 @@ elif navigate_button=='Statistical Analysis':
     dfa=dfa.rename(columns={"index": "year"})
     dfa.set_index('year',inplace=True)
     st.write(dfa)
+    with st.beta_expander("Expand for Attributes definition"):
+        st.markdown(content_string, unsafe_allow_html=True)
+
+
+
     st.header("Statistical Analysis")
     
 
